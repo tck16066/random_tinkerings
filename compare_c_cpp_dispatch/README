@@ -1,0 +1,54 @@
+This is a collection of small programs to test the timing of different methods to dispatch C++
+functions.
+
+In each program, two functions are created that are to be activated by a certain specific
+dispatch method that the program intends to time. Two functions are used so that the compiler
+cannot know which function will be called and aggressively optimize to this (and no effort was
+made to see that g++ even does this). Then, an array is randomly populated to determine which
+functions to call at a given iteration of the main loop. The main loop is executed many times
+over, and this is the only part that is timed. Lastly, we output the amount of time it took
+to run the main loop. We additionally print out the value that was produced after calling the
+functions many times, so that calling the functions cannot be optimzied out.
+
+Two variables in the Makefile determine program behavior.
+
+COUNT is the number of times the
+main loop will run (and also how long setup time will take, since it must initialize an array
+of COUNT elements). These tests are worthless if this array cannot fit entirely in memory without
+spilling into hard disk swap space.
+
+NUM_FUNCTS is poorly named, but it determines the number of random numbers used to initialize the
+array of dispatchers. Essentially, the larger this number is, the more uncertainty there is as to
+which function is called for a specific iteration of the loop. It only really makes sense for the
+C-style static dispatchers (if, switch). The programs support at most 16.
+
+
+None of this was written with good practices in mind. It doesn't even free on its own the  memory
+that it allocates. It was code written to test a specific thing as quickly as possible, before
+interest was lost. Don't judge me, man!
+
+
+
+Tests:
+
+C Function chain of if's, permit inlining:
+To determine which function we call, we use a series of if's. The test also permits function
+inlining.
+
+C Function chain of if's, no inlining:
+Same as before, but disallow inlining.
+
+C Function switch, permit inlining:
+We use a switch to choose which function to activate. Inlining permitted.
+
+C Function switch, no lining:
+Same as before, but disallow inlining.
+
+C function pointer:
+Use indirection through C function pointers.
+
+Lambda:
+Instantiate an array of lambda functions and call these.
+
+Polymorphism:
+Use virtual functions.
