@@ -5,6 +5,10 @@
 
 #include <functional>
 
+#ifndef COUNT
+#define COUNT 1000000000
+#endif
+
 #define DIVIDER 1000
 
 #ifndef COUNT
@@ -18,7 +22,10 @@
 #endif
 
 /*
-*
+* std::functions are not usually passed around by pointer, but if we want to test the
+* actual dispatch mechanism itself, this is how to do it. Otherwise, we incurr the
+* penalty to copy each object into cache before running the function. In a second test,
+* we'll do this without pointers.
 */
 
 std::function<void(int&)> add1 = [](int &x){x += 1;};
@@ -45,61 +52,59 @@ int main(int argc, char *argv[])
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, NUM_FUNCTS - 1);
 
-    std::function<void(int&)> *arr = new std::function<void(int&)>[COUNT / DIVIDER];
+    std::function<void(int&)> **arr = new std::function<void(int&)>*[COUNT / DIVIDER];
 
-    const int iters = COUNT / DIVIDER;
-
-    for (uint32_t i = 0; i < iters; ++i)
+    for (uint32_t i = 0; i < COUNT/ DIVIDER; ++i)
     {
         switch (dis(gen))
         {
             case 0:
-                arr[i] = add1;
+                arr[i] = &add1;
                 break;
             case 1:
-                arr[i] = add2;
+                arr[i] = &add2;
                 break;
             case 2:
-                arr[i] = add3;
+                arr[i] = &add3;
                 break;
             case 3:
-                arr[i] = add4;
+                arr[i] = &add4;
                 break;
             case 4:
-                arr[i] = add5;
+                arr[i] = &add5;
                 break;
             case 5:
-                arr[i] = add6;
+                arr[i] = &add6;
                 break;
             case 6:
-                arr[i] = add7;
+                arr[i] = &add7;
                 break;
             case 7:
-                arr[i] = add8;
+                arr[i] = &add8;
                 break;
             case 8:
-                arr[i] = add9;
+                arr[i] = &add9;
                 break;
             case 9:
-                arr[i] = add10;
+                arr[i] = &add10;
                 break;
             case 10:
-                arr[i] = add11;
+                arr[i] = &add11;
                 break;
             case 11:
-                arr[i] = add12;
+                arr[i] = &add12;
                 break;
             case 12:
-                arr[i] = add13;
+                arr[i] = &add13;
                 break;
             case 13:
-                arr[i] = add14;
+                arr[i] = &add14;
                 break;
             case 14:
-                arr[i] = add15;
+                arr[i] = &add15;
                 break;
             case 15:
-                arr[i] = add16;
+                arr[i] = &add16;
                 break;
         }
     }
@@ -109,17 +114,17 @@ int main(int argc, char *argv[])
 
     int x = 7;
 
-    for (uint32_t j = 0; j < DIVIDER; j++)
+    for (uint32_t j = 0; j < DIVIDER; ++j)
     {
-        for (uint32_t i = 0; i < iters; ++i)
+        for (uint32_t i = 0; i < COUNT / DIVIDER; ++i)
         {
-            arr[i](x);
+            (*arr[i])(x);
         }
     }
 
     double stop = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 
-    std::cout << "time lambda:  " << x << "   " << stop << std::endl;
+    std::cout << "time pointer lambda:  " << x << "   " << stop << std::endl;
 
     return 0;
 }
