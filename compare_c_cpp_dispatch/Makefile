@@ -1,7 +1,7 @@
 # This isn't a cleanly written makefile. It has potential for errors if you kill
 # it while it's building, it duplicates logic, etc. Lazy man's Makefile.
 
-NUM_FUNCTS = 4
+NUM_FUNCTS = 16
 COUNT = 10000000000
 
 

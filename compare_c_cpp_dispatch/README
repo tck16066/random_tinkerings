@@ -12,15 +12,13 @@ functions many times, so that calling the functions cannot be optimzied out.
 
 Two variables in the Makefile determine program behavior.
 
-COUNT is the number of times the
-main loop will run (and also how long setup time will take, since it must initialize an array
-of COUNT elements). These tests are worthless if this array cannot fit entirely in memory without
-spilling into hard disk swap space.
+COUNT is the number of times the main loop will run (and also how long setup time will take,
+since it must initialize an array of COUNT elements). These tests are worthless if this
+array cannot fit entirely in memory without spilling into hard disk swap space.
 
-NUM_FUNCTS is poorly named, but it determines the number of random numbers used to initialize the
-array of dispatchers. Essentially, the larger this number is, the more uncertainty there is as to
-which function is called for a specific iteration of the loop. It only really makes sense for the
-C-style static dispatchers (if, switch). The programs support at most 16.
+NUM_FUNCTS is poorly named, but it determines the number of functions in the program.
+Essentially, the larger this number is, the more uncertainty there is as to
+which function is called for a specific iteration of the loop.
 
 
 None of this was written with good practices in mind. It doesn't even free on its own the  memory
@@ -47,8 +45,17 @@ Same as before, but disallow inlining.
 C function pointer:
 Use indirection through C function pointers.
 
+pointer_lambda:
+Instantiate an array of pointer to lambda functions and call these.
+
 Lambda:
 Instantiate an array of lambda functions and call these.
 
 Polymorphism:
 Use virtual functions.
+
+bind_dynamic:
+Use std::bind to create array of std::functions that are virtual functions.
+
+bind_static:
+Use std::bind to create array of std::functions that are static member functions.
