@@ -1,0 +1,6 @@
+This dir contains a comparison between return code speed and exception speed.
+To get a real comparison, at some point the functions should be moved into
+shared object code so that the compiler can't optimize as much.
+
+sparse -> few errors
+none -> no errors
