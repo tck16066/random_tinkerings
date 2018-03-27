@@ -1,6 +1,11 @@
 #!/bin/bash
 
-RESULTS_DIR=res_dir
+if [ "$#" -ne "1" ]; then
+    RESULTS_DIR="res_dir"
+else
+    RESULTS_DIR=$1
+fi
+
 
 rm -rf $RESULTS_DIR
 mkdir -p $RESULTS_DIR
