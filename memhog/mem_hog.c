@@ -8,7 +8,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-int run = 1;
+volatile int run = 1;
+int cache_killer = 1;
 
 void sighand(int sig)
 {
@@ -19,24 +20,15 @@ int main(int argc, char *argv[])
 {
     if (argc != 2)
     {
-        fprintf(stderr, "Need a memory percentage arg.");
-        return -1;
-    }
-
-    double percentage = atof(argv[1]) / 100.0;
-    if (percentage <= 0.0 || percentage > 100.0)
-    {
-        fprintf(stderr, "Need a valid memory percentage arg.");
+        fprintf(stderr, "Need a memory bytes arg.");
         return -1;
     }
 
     signal(SIGINT, sighand);
 
-    struct sysinfo si;
-    sysinfo(&si);
-
-    size_t sys_bytes = si.mem_unit * si.freeram;
-    size_t alloc_size = (sys_bytes * percentage);
+    size_t alloc_size;
+    sscanf(argv[1], "%zu", &alloc_size);
+    printf("Allocate %zu bytes\n", alloc_size);
 
     char *mem = malloc(alloc_size);
 
@@ -51,7 +43,8 @@ int main(int argc, char *argv[])
 
     while (run)
     {
-        sleep(1);
+        if (cache_killer)
+            mem[rand() % alloc_size] = (char)rand();
     }
 
     srand((unsigned) time(NULL));
