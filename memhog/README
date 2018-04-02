@@ -1,0 +1,1 @@
+Allocates a percentage of free memory and just keeps it. Touches all pages so Linux can't satisfy allocation by overcommit.
