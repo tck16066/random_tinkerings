@@ -1,0 +1,56 @@
+PROJECT_NAME           = ConnectionNode
+
+INPUT                  =  ./ ./include ./src
+
+OUTPUT_DIRECTORY       = ./cn_build/docs
+
+OUTPUT_LANGUAGE        = English
+
+EXTRACT_ALL            = NO
+
+EXTRACT_PRIVATE        = NO
+
+EXTRACT_STATIC         = YES
+
+HIDE_UNDOC_MEMBERS     = YES
+
+HIDE_UNDOC_CLASSES     = YES
+
+REPEAT_BRIEF           = YES
+
+ALWAYS_DETAILED_SEC    = NO
+
+FULL_PATH_NAMES        = NO
+
+INTERNAL_DOCS          = NO
+
+CLASS_DIAGRAMS         = YES
+
+SOURCE_BROWSER         = YES
+
+INLINE_SOURCES         = NO
+
+STRIP_CODE_COMMENTS    = YES
+
+CASE_SENSE_NAMES       = YES
+
+HIDE_SCOPE_NAMES       = NO
+
+VERBATIM_HEADERS       = YES
+
+SHOW_INCLUDE_FILES     = YES
+
+INHERIT_DOCS           = YES
+
+INLINE_INFO            = YES
+
+SORT_MEMBER_DOCS       = YES
+
+DISTRIBUTE_GROUP_DOC   = NO
+
+TAB_SIZE               = 2
+
+GENERATE_TODOLIST      = YES
+
+GENERATE_TREEVIEW      = YES
+

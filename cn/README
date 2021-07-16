@@ -1,0 +1,133 @@
+What is this?
+  This is cn, the Communications Node network server/client program.
+
+
+
+How do I build it?
+  Get yourself a Linux box (Most of this code is standard C++ and POSIX, but
+  it hasn't been compiled on other Unix or Unix-like systems).
+  Install libuuid-dev (on Ubuntu, apt-get install uuid-dev).
+  Install doxygen (on Ubuntu, apt-get install doxygen)
+  Then:
+    > cd uber/cn
+    > make -j 99
+  The executable is built:
+    ./cn_build/cn
+  The docs are built in:
+     ./cn_build/docs/html/index.html
+  To build just the executable:
+    make -j 99 exec
+  To build just the docs:
+    make docs
+
+
+
+How do I run it?
+  Run the executable as root. The program uses raw sockets, which require an
+  elevation in privs.
+    # ./build_cn/cn
+  Alternatively, set CAP_NET_RAW on the executable (as root):
+    # setcap cap_net_raw+ep ./cn_build/cn
+
+
+Is there an example of the output?
+  Yes there is, thanks for asking! See output.txt for a sample run of the
+  program talking to 2 other local instances.
+
+
+What does it do?
+  Current capabilities are node ID generation, node advertisement ("Hey, guys!
+  I'm here!"), and ping. It will do this for an arbitrary number of network
+  nodes and an arbitrary number of instances on a single host. There is no need
+  to configure the program. Simply run the executable, and it will do the rest.
+  On the off chance you happen to be running traffic on the network that runs
+  on IPv4 and protocol number 144, run ./build_cn/cn -h to determine how you can
+  pass a different protocol number.
+
+  The main loop of the program will display a list of known hosts and the time
+  it takes to "ping" them. If a ping time is unknown, it will say so. It will
+  take 2 full iterations of the main loop after a new node is discovered before
+  the ping time is known (one iteration to send the ping message, and then it
+  will be reported in the next 15 seconds). This limitation is entirely a time-
+  based one, as it would be possible to request a ping immediately when a node
+  is advertised; this would require a little more state in the CNNeighborState
+  object so that pings from the main loop would not interfere with the pings
+  sent out when a node advertisement is seen.
+
+
+
+What doesn't it do?
+  Well, it won't make your morning coffee. Sorry.
+  It also does not conduct bandwidth tests. To support this wouldn't be
+  terribly difficult (simply create a new command and use the payload field
+  in a CNMEssage's CNProtocolHeader and then use the CNNeighborStateManager and
+  CNNeighborState to implement a series of message transfers/ACKS) but would
+  require more time than I had.
+
+
+
+That's it?
+  Well, kind-of. It's also got the beginnings of a framework for expanding these
+  capabilities. Explore the doxygen docs that can be built to get an understanding
+  of this simple framework.
+  It's also got a lot of time-based limitations.
+
+
+
+What limitations does it have?
+  For time-based considerations, I made no attempt to handle removal of nodes that have
+  permanently "gone away." This can be achieved naively in the CNNeighborStateManager
+  by adding a last-comms timestamp to CNNeighborState and simply iterating over the entire
+  collection of neighbors to determine which ones haven't spoken up in a while. A more
+  efficient mechanism could use some type of calendar queue algorithm to accomplish
+  the same.
+
+  It only operates over a RAW IP socket (so no direct communications over UDP or TCP).
+  This also means that each instance on a host is required to parse _all_ CN protocol
+  messages that arrive (inefficient) to the host. It also means that the occasional
+  packet may be lost since I have not built reliable communication into the protocol.
+
+  Simply to avoid having to parse and walk IPv6 headers, only IPv4 is supported.
+  Since we are on a LAN, and the on-wire frames will have a frame check sequence,
+  we don't bother including a checksum on the data or checking the IPv4 checkusm.
+  A one's-complement checksum could be added to the protocol if this proved to be a problem.
+
+  Instances that communicate with each other on the same host do so through
+  the Raw IP socket. Because of this, a network connection must be maintained
+  at all times. It is assumed that the host is already configured to operate on
+  the LAN. This program will not alter any network configuration.
+  The program will error out if it attempts to send a message
+  when no interfaces are present (a time-based compromise so that there aren't
+  silent failures that look like the program isn't working). To overcome these
+  limitations, a new CNTransport derivative can be created to speak to same-system
+  instances of the program through named pipes, message queues, or other creative
+  mechanisms.
+
+  The entire system is single-threaded. For this simple problem/assignment, that's not a
+  deal-breaker since the system will be I/O-bound. As the system scales, to handle
+  more CN's, the addition of more complicated transport types that speak in a unicast
+  manner at OSI L2 (TCP, UDP overIP) will help. A normal desktop computer will likely
+  saturate the network connection with these tiny packets before a CPU core is pegged due
+  to the operations of this program. For systems with more capable network interfaces,
+  multi-threaded Rx handling could be added in the CNNeighborStateManager. Alternatively,
+  if one wouldn't mind the fact that he would need to communicate with the host over N
+  CN ID's, he can simply launch N instances of the application to keep up to N cores busy.
+
+Any Known problems?
+  The current ping times to machines are astronomical when compared with system-generated
+  ICMP packets from the ping utility. They are 100x more latent than ping on the
+  admittedly-poor 802.11 network I was using for test. I haven't debugged this in entirety, but
+  same-host pings happen in under a millisecond (and often shows up as "0 ms"). This
+  is roughly 5x slower than pinging localhost but can be explained since the CN ping
+  isn't the plain loopback in the network stack that pinging localhost is.
+  When I viewed the traffic in a protocol analyzer, the packet timestamps demonstrate
+  that the packets are indeed not making it to the host for hundreds of milliseconds.
+  Since the same code path is taken for same-host packets, the problem is either
+  inherent in raw sockets/network stack on the system, or a problem with the way
+  I'm interfacing with them.
+
+
+Any references?
+  There were plently, almost entirely man pages. The website cplusplus.com was a great help
+  for a refresher on the C++ STD Lib containers that I used.
+
