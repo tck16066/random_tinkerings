@@ -5,13 +5,17 @@ NUM_FUNCTS = 16
 COUNT = 10000000000
 
 
-FLAGS = -O2 -std=c++11
-DEBUG_FLAGS = -O0 -std=c++11 -g
+FLAGS = -O2 -std=c++17
+DEBUG_FLAGS = -O0 -std=c++17 -g
 
-EXECS = poly pointer_lambda lambda cfunct_if cfunct_switch cfunct_switch_noinline cfunct_if_noinline cptr bind_dynamic bind_static
+EXECS = variant_poly poly pointer_lambda lambda cfunct_if cfunct_switch cfunct_switch_noinline cfunct_if_noinline cptr cptr_double bind_dynamic bind_static
 
 all: $(EXECS)
 
+variant_poly: test_variant_poly.cc
+	g++ $(FLAGS) -DNUM_FUNCTS=$(NUM_FUNCTS) -DCOUNT=$(COUNT)  test_variant_poly.cc -o variant_poly
+	g++ $(DEBUG_FLAGS) -DNUM_FUNCTS=$(NUM_FUNCTS) -DCOUNT=$(COUNT)  test_variant_poly.cc -o variant_poly_debug
+	g++ $(FLAGS) -DNUM_FUNCTS=$(NUM_FUNCTS) -DCOUNT=$(COUNT)  test_variant_poly.cc -S -o variant_poly.asm
 
 poly: test_poly.cc
 	g++ $(FLAGS) -DNUM_FUNCTS=$(NUM_FUNCTS) -DCOUNT=$(COUNT)  test_poly.cc -o poly
@@ -48,6 +52,11 @@ cfunct_if_noinline: test_cfunct_if.cc
 	g++ $(FLAGS) -DNUM_FUNCTS=$(NUM_FUNCTS) -DCOUNT=$(COUNT) -DNOINLINE test_cfunct_if.cc -o cfunct_if_noinline
 	g++ $(DEBUG_FLAGS) -DNUM_FUNCTS=$(NUM_FUNCTS) -DCOUNT=$(COUNT) -DNOINLINE test_cfunct_if.cc -o cfunct_if_noinline_debug
 	g++ $(FLAGS) -DNUM_FUNCTS=$(NUM_FUNCTS) -DCOUNT=$(COUNT) -DNOINLINE test_cfunct_if.cc -S -o cfunct_if_noinline.asm
+
+cptr_double: test_cptr_double_lookup.cc
+	g++ $(FLAGS) -DNUM_FUNCTS=$(NUM_FUNCTS) -DCOUNT=$(COUNT) test_cptr_double_lookup.cc -o cptr_double
+	g++ $(DEBUG_FLAGS) -DNUM_FUNCTS=$(NUM_FUNCTS) -DCOUNT=$(COUNT) test_cptr_double_lookup.cc -o cptr_double_debug
+	g++ $(FLAGS) -DNUM_FUNCTS=$(NUM_FUNCTS) -DCOUNT=$(COUNT) test_cptr_double_lookup.cc -S -o cptr_double.asm
 
 cptr: test_cptr.cc
 	g++ $(FLAGS) -DNUM_FUNCTS=$(NUM_FUNCTS) -DCOUNT=$(COUNT) test_cptr.cc -o cptr

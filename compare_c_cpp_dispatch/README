@@ -1,8 +1,8 @@
 This is a collection of small programs to test the timing of different methods to dispatch C++
 functions.
 
-In each program, two functions are created that are to be activated by a certain specific
-dispatch method that the program intends to time. Two functions are used so that the compiler
+In each program, multiple functions are created that are to be activated by a certain specific
+dispatch method that the program intends to time. Many functions are used so that the compiler
 cannot know which function will be called and aggressively optimize to this (and no effort was
 made to see that g++ even does this). Then, an array is randomly populated to determine which
 functions to call at a given iteration of the main loop. The main loop is executed many times
@@ -45,6 +45,9 @@ Same as before, but disallow inlining.
 C function pointer:
 Use indirection through C function pointers.
 
+C function pointer double lookup:
+Emulate 2 lookups before a function call through pointer, to simulate a VTable in C.
+
 pointer_lambda:
 Instantiate an array of pointer to lambda functions and call these.
 
@@ -53,6 +56,9 @@ Instantiate an array of lambda functions and call these.
 
 Polymorphism:
 Use virtual functions.
+
+Variant Polymorphism:
+Use a variant to store types, dispatch from it.
 
 bind_dynamic:
 Use std::bind to create array of std::functions that are virtual functions.
