@@ -5,6 +5,10 @@
 
 #include <ctime>
 
+#ifndef RAND
+#define RAND 0
+#endif
+
 #ifndef COUNT
 #define COUNT 1000000000
 #endif
@@ -125,16 +129,29 @@ using ArrType = std::array<VarType, COUNT / DIVIDER>;
 
 int main()
 {
+    ArrType *arrp = new ArrType;
+    auto &arr = *arrp;
+
+    uint32_t *int_arr = new uint32_t[COUNT / DIVIDER];
+#if RAND
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, NUM_FUNCTS - 1);
 
-    ArrType *arrp = new ArrType;
-    auto &arr = *arrp;
+    for (uint32_t i = 0; i < COUNT / DIVIDER; ++i)
+    {
+        int_arr[i] = dis(gen);
+    }
+#else
+    for (uint32_t i = 0; i < COUNT / DIVIDER; ++i)
+    {
+        int_arr[i] = (i % (NUM_FUNCTS - 1));
+    }
+#endif
 
     for (uint32_t i = 0; i < (COUNT / DIVIDER); ++i)
     {
-        switch (dis(gen))
+        switch (int_arr[i])
         {
             case 0:
                 arr[i] = VarType(derived1());
@@ -202,7 +219,7 @@ int main()
 
     double stop = ( std::clock() - start ) / (double) CLOCKS_PER_SEC;
 
-    std::cout << "time static poly:  " << x << "   " << stop << std::endl;
+    std::cout << "time variant poly:  " << x << "   " << stop << std::endl;
 
     delete arrp;
 

@@ -5,6 +5,10 @@
 
 #include <functional>
 
+#ifndef RAND
+#define RAND 0
+#endif
+
 #ifndef COUNT
 #define COUNT 1000000000
 #endif
@@ -48,15 +52,28 @@ std::function<void(int&)> add16 = [](int &x){x += 16;};
 
 int main(int argc, char *argv[])
 {
+    std::function<void(int&)> **arr = new std::function<void(int&)>*[COUNT / DIVIDER];
+
+    uint32_t *int_arr = new uint32_t[COUNT / DIVIDER];
+#if RAND
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, NUM_FUNCTS - 1);
 
-    std::function<void(int&)> **arr = new std::function<void(int&)>*[COUNT / DIVIDER];
+    for (uint32_t i = 0; i < COUNT / DIVIDER; ++i)
+    {
+        int_arr[i] = dis(gen);
+    }
+#else
+    for (uint32_t i = 0; i < COUNT / DIVIDER; ++i)
+    {
+        int_arr[i] = (i % (NUM_FUNCTS - 1));
+    }
+#endif
 
     for (uint32_t i = 0; i < COUNT/ DIVIDER; ++i)
     {
-        switch (dis(gen))
+        switch (int_arr[i])
         {
             case 0:
                 arr[i] = &add1;
