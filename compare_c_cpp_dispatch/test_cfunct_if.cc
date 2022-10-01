@@ -3,6 +3,10 @@
 
 #include <ctime>
 
+#ifndef RAND
+#define RAND 0
+#endif
+
 #ifndef COUNT
 #define COUNT 1000000000
 #endif
@@ -59,16 +63,24 @@ void __attribute__ ((noinline)) add16(int &x) {x += 16;}
 int main(int argc, char *argv[])
 {
 
+
+    uint32_t *arr = new uint32_t[COUNT/ DIVIDER];
+
+#if RAND
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, NUM_FUNCTS - 1);
-
-    uint32_t *arr = new uint32_t[COUNT/ DIVIDER];
 
     for (uint32_t i = 0; i < COUNT / DIVIDER; ++i)
     {
         arr[i] = dis(gen);
     }
+#else
+    for (uint32_t i = 0; i < COUNT / DIVIDER; ++i)
+    {
+        arr[i] = (i % (NUM_FUNCTS - 1));
+    }
+#endif
 
     std::clock_t start;
     start = std::clock();
